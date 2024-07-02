@@ -1,26 +1,55 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 function Contact() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    query: ''
+  
+  const [contact, setContact] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    query: "",
   });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value
+  const HandleInput = (e) => {
+    const name = e.target.name;
+    const value = e.target.value;
+
+    setContact((prev) => ({
+       ...prev,
+       [name]:value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
-    // Handle form submission here
-    console.log(formData);
+    
+
+    try {
+      const response = await axios.post('http://localhost:3000/issue', {
+        name: contact.name,
+        email: contact.email,
+        phone: contact.phone,
+        query: contact.query
+      });
+
+      if (response.status === 201) {
+        alert('Data sent successfully!');
+      } else {
+        alert('Error sending data');
+      }
+    } catch (error) {
+      alert('Error sending data');
+      console.error(error);
+    }
+    setContact({
+      name: "",
+      email: "",
+      phone: "",
+      query: ""
+    });
+
   };
+  
 
   return (
     <div className='bg-gradient-to-r from-lime-300 to-purple-500'>
@@ -41,7 +70,7 @@ function Contact() {
               Ask Your Query <br />
               (अपना प्रश्न पूछें)
             </h4>
-            <form className='my-4' onSubmit={handleSubmit}>
+            <form className='my-4' onSubmit={handleSubmit} >
               <label htmlFor='name' className='block'>
                 Name
               </label>
@@ -49,8 +78,11 @@ function Contact() {
                 id='name'
                 type='text'
                 name='name'
-                value={formData.name}
-                onChange={handleChange}
+                value={contact.name}
+                autoComplete="off"
+                onChange={HandleInput}
+                required
+                
                 className='w-full h-10 border-2 border-gray-500 rounded-lg my-1 p-2'
               />
               <label htmlFor='email' className='block'>
@@ -60,8 +92,10 @@ function Contact() {
                 id='email'
                 type='email'
                 name='email'
-                value={formData.email}
-                onChange={handleChange}
+                value={contact.email}
+                autoComplete="off"
+                onChange={HandleInput}
+                required
                 className='w-full h-10 border-2 border-gray-500 rounded-lg my-1 p-2'
               />
               <label htmlFor='phone' className='block'>
@@ -69,10 +103,12 @@ function Contact() {
               </label>
               <input
                 id='phone'
-                type='text'
+                type='number'
                 name='phone'
-                value={formData.phone}
-                onChange={handleChange}
+                value={contact.phone}
+                
+                onChange={HandleInput}
+                required
                 className='w-full h-10 border-2 border-gray-500 rounded-lg my-1 p-2'
               />
               <label htmlFor='ask' className='block'>
@@ -81,8 +117,11 @@ function Contact() {
               <textarea
                 id='ask'
                 name='query'
-                value={formData.query}
-                onChange={handleChange}
+                type = 'text'
+                value={contact.query}
+                autoComplete="off"
+                onChange={HandleInput}
+                required
                 className='w-full h-48 border-4 border-gray-500 rounded-lg my-1 p-2'
                 placeholder='Type Your Text...'
               ></textarea>
